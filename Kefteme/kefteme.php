@@ -99,7 +99,7 @@ How you can usage this?
 
 8.  backconnect - simple reverse shell via netcat
 
-9.  dump_cred - attemp credentials access via mimipenguin and some exploits. (Need be root. Automatic pwn attempt)
+9.  dump_cred - attemp credentials access via LaZagne and some exploits. (Need be root. Automatic pwn attempt)
 
 10.  src_leak - exfiltrate /var/www/
 
